@@ -9,6 +9,10 @@ body {
   width: 100%;
 }
 
+#menu a{
+  color: yellow;
+}
+
 #paginas-reglamento img {
   width: 100%;
   display: block;
