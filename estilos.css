@@ -1,5 +1,11 @@
-img {
+body {
+  background-color: black;
+}
+
+#paginas-reglamento img {
+  width: 70%;
   display: block;
   margin-left: auto;
-  margin-right: auto;;
+  margin-right: auto;
+  overflow: hidden;
 }
