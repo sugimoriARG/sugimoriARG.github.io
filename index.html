@@ -5,28 +5,7 @@
 </head>
 <body>
 
-<audio src="http://interactive.brandrepublic.com/bloomberg/background.wav" autoplay>
-<p>If you are reading this, it is because your browser does not support the audio element.     </p>
-<embed src="http://interactive.brandrepublic.com/bloomberg/background.wav" width="180" height="90" hidden="true" />
-</audio> 
-
-    
-<audio id="soundTour2" src="http://interactive.brandrepublic.com/bloomberg/insp1.mp3"></audio>
-<audio id="soundTour5" src="http://home.jejaju.com/play/smoothFade/track3.mp3"></audio>
-<audio id="soundTour99" src="http://home.jejaju.com/play/smoothFade/I_Like_It_I_Love_It.mp3"></audio>
-
-    
-    
-<div id="tracks">
-        </div>
-<div id="beat">
-        
-</div>
-<div id="finale">
-             
-</div>
-
-<div class="topnav">
+<div class="topnav" id="myTopnav">
     <a href="#portada" class="active">Portada</a>
     <a href="#indice">Indice</a>
     <a href="#pokemon">Pokemon</a>
@@ -37,9 +16,13 @@
     <a href="#ligapokemon">Liga Pokemon</a>
     <a href="#pokedex">Pokedex</a>
     <a href="#modalidades">Modalidades</a>
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+        <img class="poke" src="/reglamento/iconos/poke.png" alt="poke.png">
+    </a>
   </div>
 
 <div id="paginas-reglamento">
+<div id="pokemon-music">
 <section id="portada">
     <img src="reglamento/paginas/01 copia.png"/> 
     <img src="reglamento/paginas/02 copia.png"/>
@@ -58,6 +41,7 @@
     <img src="reglamento/paginas/13 copia.png"/>
     <img src="reglamento/paginas/14 copia.png"/>
 </section>
+
 <section id="pokemon">
     <img src="reglamento/paginas/15 copia.png"/>
     <img src="reglamento/paginas/16 copia.png"/>
@@ -78,6 +62,9 @@
     <img src="reglamento/paginas/31 copia.png"/>
     <img src="reglamento/paginas/32 copia.png"/>
 </section>
+</div>
+
+<div id="batallas-music">
 <section id="batallas">
     <img src="reglamento/paginas/33 copia.png"/>
     <img src="reglamento/paginas/34 copia.png"/>
@@ -94,11 +81,14 @@
     <img src="reglamento/paginas/45 copia.png"/>
     <img src="reglamento/paginas/46 copia.png"/>
     <img src="reglamento/paginas/47 copia.png"/>
-    <img src="reglamento/paginas/48 copia.png"/>
+    <img src="reglamento/paginas/48b copia.png"/>
     <img src="reglamento/paginas/49 copia.png"/>
     <img src="reglamento/paginas/50 copia.png"/>
     <img src="reglamento/paginas/51 copia.png"/>
 </section>
+</div>
+
+<div id="combate-items-music">
 <section id="combate">
     <img src="reglamento/paginas/52 copia.png"/>
     <img src="reglamento/paginas/53 copia.png"/>
@@ -138,6 +128,7 @@
     <img src="reglamento/paginas/87 copia.png"/>
     <img src="reglamento/paginas/88 copia.png"/>
 </section>
+
 <section id="items">
     <img src="reglamento/paginas/89 copia.png"/>
     <img src="reglamento/paginas/90 copia.png"/>
@@ -146,12 +137,16 @@
     <img src="reglamento/paginas/93 copia.png"/>
     <img src="reglamento/paginas/94 copia.png"/>
 </section>
+</div>
+
+<div id=otras-secciones-music>
 <section id="sorpresa">
     <img src="reglamento/paginas/95 copia.png"/>
     <img src="reglamento/paginas/96 copia.png"/>
     <img src="reglamento/paginas/97 copia.png"/>
     <img src="reglamento/paginas/98 copia.png"/>
 </section>
+
 <section id="ligapokemon">
     <img src="reglamento/paginas/99 copia.png"/>
     <img src="reglamento/paginas/100 copia.png"/>
@@ -159,10 +154,12 @@
     <img src="reglamento/paginas/102 copia.png"/>
     <img src="reglamento/paginas/103 copia.png"/>
 </section>
+
 <section id="pokedex">
     <img src="reglamento/paginas/104 copia.png"/>
     <img src="reglamento/paginas/105 copia.png"/>
 </section>
+
 <section id="modalidades">
     <img src="reglamento/paginas/106 copia.png"/>
     <img src="reglamento/paginas/107 copia.png"/>
@@ -177,7 +174,66 @@
     <img src="reglamento/paginas/116 copia.png"/>
     <img src="reglamento/paginas/117 copia.png"/>
     <img src="reglamento/paginas/118 copia.png"/>
+</section>
 </div>  
+</div>  
+
+
+<script>
+    function myFunction() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+
+     const soundfiles = ["musica/01-32.mp3", "musica/33-51.mp3", "musica/52-94.mp3", "musica/95-118.mp3"];
+     const divIds = ["pokemon-music", "batallas-music", "combate-items-music", "otras-secciones-music"];
+     const els = soundfiles.map((filename, index) => {
+       const el = document.createElement("audio");
+       el.src = "/" + filename;
+       document.body.appendChild(el);
+       return el;
+     })
+     const playing = new Array(divIds.length).fill(false);
+     window.addEventListener('scroll', (e) => {
+       const scroll = e.target.body.scrollTop;
+       const rects = divIds.map(id => document.getElementById(id).getBoundingClientRect());
+       const tops = rects.map(rect => rect.top);
+       tops.forEach((top, ind) => {
+         /*if (!playing[ind] && top <= rects[ind].height * 2 / 3 && top > - rects[ind].height * 1 / 3) {*/
+           if (!playing[ind] && parseInt(top) <= parseInt(rects[ind].height * 2 / 3) && parseInt(top) > - parseInt(rects[ind].height * 1 / 3)) {
+            console.log("AAAAAAAAA");
+            console.log(els[ind]);
+            console.log("menor igual a rects[ind].height * 2 / 3");
+            console.log(rects[ind].height * 2 / 3);
+            console.log("mayor a rects[ind].height * 1 / 3");
+            console.log(rects[ind].height * 1 / 3);
+            console.log("top");
+            console.log(top);
+
+
+            els[ind].play();
+           playing[ind] = true;
+         } else if (playing[ind] && (parseInt(top) > parseInt(rects[ind].height * 2 / 3) || parseInt(top) < - parseInt(rects[ind].height * 1 / 3))) {
+            console.log("BBBBBBB");
+            console.log(els[ind]);
+            console.log("menor igual a rects[ind].height * 2 / 3");
+            console.log(rects[ind].height * 2 / 3);
+            console.log("mayor a rects[ind].height * 1 / 3");
+            console.log(rects[ind].height * 1 / 3);
+            console.log("top");
+            console.log(top);
+
+
+            els[ind].pause();
+           playing[ind] = false;
+         }
+       });
+     });
+</script>
 
 </body>
 </html> 
