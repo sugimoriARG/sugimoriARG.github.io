@@ -202,8 +202,19 @@
        const scroll = e.target.body.scrollTop;
        const rects = divIds.map(id => document.getElementById(id).getBoundingClientRect());
        const tops = rects.map(rect => rect.top);
+
        tops.forEach((top, ind) => {
-         /*if (!playing[ind] && top <= rects[ind].height * 2 / 3 && top > - rects[ind].height * 1 / 3) {*/
+
+        console.log("scroll");
+       console.log(scroll); 
+
+        console.log("rects[ind]");
+       console.log(rects[ind]); 
+
+       console.log("tops");
+       console.log(tops); 
+
+       /*if (!playing[ind] && top <= rects[ind].height * 2 / 3 && top > - rects[ind].height * 1 / 3) {*/
            if (!playing[ind] && parseInt(top) <= parseInt(rects[ind].height * 2 / 3) && parseInt(top) > - parseInt(rects[ind].height * 1 / 3)) {
             console.log("AAAAAAAAA");
             console.log(els[ind]);
