@@ -84,7 +84,7 @@ energia_agua = Energia("agua","agua")
 coste_golpe_agua = ["agua"]
 prob_golpe_agua = 0
 ed_golpe_agua = [EfectoDanio(20)]
-golpe_agua = Habilidad("golpe agua",coste_h2,prob_h2, "desc2",ed2)
+golpe_agua = Habilidad("golpe agua",coste_golpe_agua,prob_golpe_agua, "desc2",ed_golpe_agua)
 
 coste_burbujas = ["agua"]
 prob_burbujas = [1,2,3]
