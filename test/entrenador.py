@@ -2,12 +2,13 @@ import random
 import utils
 
 class Entrenador:
-    def __init__(self, nombre, pokemones):
+    def __init__(self, nombre, pokemones, print_color=''):
         self.nombre = nombre
         self.pokemones = pokemones
         self.poke_seleccionado = None
         self.pociones = []
         self.pokebolas = 0
+        self.print_color = print_color
 
     def __str__(self):
         return self.nombre
@@ -89,16 +90,5 @@ class Entrenador:
         # puede cambiar pokemon
         # self.get_poke_seleccionado()
         print(f'la vida de {poke_turno.nombre} cambio de [{poke_turno_vida}/{poke_turno.vida_maxima}] a [{poke_turno.vida}/{poke_turno.vida_maxima}] => {poke_turno.vida - poke_turno_vida}')
-        print(f'la vida de {poke_oponente.nombre} cambio de {poke_oponente_vida}/{poke_oponente.vida_maxima}] a [{poke_oponente.vida}/{poke_oponente.vida_maxima}] => {poke_oponente.vida - poke_oponente_vida}')
+        print(f'la vida de {poke_oponente.nombre} cambio de [{poke_oponente_vida}/{poke_oponente.vida_maxima}] a [{poke_oponente.vida}/{poke_oponente.vida_maxima}] => {poke_oponente.vida - poke_oponente_vida}')
         return resultado
-                
-
-
-    # def __eq__(self, other):
-    #     return self.nombre == other.nombre
-
-    # def __ne__(self, other):
-    #     return self.nombre != other.nombre
-
-    # def __lt__(self, other):
-    #     return self.nombre < other.nombre
