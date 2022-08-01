@@ -73,7 +73,7 @@ class Batalla:
             time.sleep(sleep_time)
 
             # primero se efectua el efecto existente en el pokemon
-            poke_turno.ejecutar_efectos()
+            poke_turno.ejecutar_buffs()
 
             res = self.turno_entrenador.turno(self)
             fin_seleccion, fin_turno, cambia_pokemon, resultado_accion = res

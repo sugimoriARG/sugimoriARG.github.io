@@ -98,8 +98,8 @@ def desplegar_menu(opciones: list, ninguna=False):
       else:
             print(f"Numero incorrecto de opcion: {opcion_numero_seleccion}")
 
-def print_noataco(pokemon, habilidad, oponente, efecto_noataca):
-   print(f'{pokemon.nombre} no atacó porque se encontraba bajo los efectos de {efecto_noataca}')
+def print_noataco(pokemon, habilidad, oponente, buff):
+   print(f'{pokemon.nombre} no atacó porque se encontraba bajo los efectos de {buff}')
    
 def print_efectos_debilidad(pokemon, oponente, efectos_debil):
    for e in efectos_debil:

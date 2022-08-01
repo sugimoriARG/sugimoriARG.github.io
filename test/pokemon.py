@@ -1,6 +1,7 @@
 from habilidad import *
 from elemento import *
 from efecto import *
+from buff import *
 import utils
 
 class Pokemon:
@@ -11,7 +12,7 @@ class Pokemon:
         self.elementos_asignados = []
         self.vida = vida
         self.vida_maxima = vida
-        self.efectos = []
+        self.buffs = []
         self.pasivos = pasivos
         self.habilidades = [h() if type(h) == type(self.__class__) else h for h in habilidades]
         self.habilidades_clases = habilidades
@@ -22,33 +23,36 @@ class Pokemon:
     def asignar_elemento(self, elemento):
         self.elementos_asignados.append(elemento)
 
-    def agregar_efecto(self, efecto, oponente=None):
-        # ver que no exista ya ese tipo de efecto
-        self.efectos.append(efecto)
-        efecto.aplicar(self, oponente)
+    def agregar_buff(self, buff):
+        mismo_tipo = [b for b in self.buffs if b.__class__ == buff.__class__]
+        for b in mismo_tipo:
+            if b.max_stack <= len(mismo_tipo):
+                self.buffs.remove(b)
+                break
+        self.buffs.append(buff)
 
-    def quitar_efecto(self, efecto):
-        if efecto in self.efectos:
-            self.efectos.remove(efecto)
+    def quitar_buff(self, buff):
+        if buff in self.buffs:
+            self.buffs.remove(buff)
 
     def recibir_danio(self, danio, elemento):
         return self._restar_vida(elemento.calcular_danio(self, danio))
 
     def usar_habilidad(self, habilidad, oponente):
         # print(habilidad.__dict__)
-        efecto_noataca = self.no_ataca_remover()
-        if efecto_noataca:
-            utils.print_noataco(self, habilidad, oponente, efecto_noataca)
+        buff = self.no_atacar()
+        if buff:
+            utils.print_noataco(self, habilidad, oponente, buff)
             return []
         return habilidad.usar(self, oponente)
 
-    def no_ataca_remover(self):
-        efectos = [e for e in self.efectos if e.__class__ == EfectoNoAtacar]
-        self.efectos = [e for e in self.efectos if e.__class__ != EfectoNoAtacar]
+    def no_atacar(self):
+        efectos = [e for e in self.buffs if e.__class__ == BuffNoAtacar]
+        # self.buffs = [e for e in self.buffs if e.__class__ != BuffNoAtacar]
         return efectos
     
     def get_efectos_debilidad(self):
-        efectos = [e for e in self.efectos if e.__class__ == EfectoDebilidad]
+        efectos = [e for e in self.buffs if e.__class__ == BuffDebilidad]
         return efectos
     
     def habilidades_disponibles(self, primer_turno=False):
@@ -72,22 +76,22 @@ class Pokemon:
         self.vida = self.vida_maxima
         return self.vida
 
-    def ejecutar_efectos(self):
+    def ejecutar_buffs(self):
         # cuando inicia un turno nuevo se aplican los efectos sobre el pkm
-        for efecto in self.efectos:
-            efecto._aplicar_efecto(self)
+        for buffs in self.buffs:
+            buffs.tick_buff(self)
         # self.sumar_turnos_efectos()
         # self.remover_efectos_viejos()
 
     def sumar_turnos_efectos(self):
-        print(self.efectos)
-        for e in self.efectos:
+        print(self.buffs)
+        for e in self.buffs:
             e.turno_actual += 1
     
     def remover_efectos_viejos(self):
-        for e in self.efectos:
+        for e in self.buffs:
             if not e.le_queda_turnos():
-                self.efectos.remove(e)
+                self.buffs.remove(e)
                 print(f'EFECTO {e} REMOVIDO')
     
     def tiene_agilidad(self):
@@ -98,11 +102,11 @@ class Pokemon:
     def format_elemento(self):
         return f'{self.elemento}'
     def format_efectos(self):
-        return f'{",".join([e.__class__.__name__ for e in self.efectos])}'
+        return f'{",".join([f"{e.__class__.__name__}({e.turnos_restantes()})" for e in self.buffs])}'
     def format_nombre(self):
         return f'<<{self.nombre}>>'
     def __str__(self):
-        return f"<<{self.nombre}>> {self.format_vida()} {self.elemento.format_color()} {self.efectos}"
+        return f"<<{self.nombre}>> {self.format_vida()} {self.elemento.format_color()} {self.buffs}"
 
 # poke1 = Pokemon("poke_fuego", "fuego", 50, [GolpeFuego, Llamarada])
 
@@ -155,23 +159,24 @@ class Squirtle(Pokemon):
         super().__init__(
             "Squirtle", 
             Agua(), 
-            600, 
+            60, 
             [
                 GolpeBasico(
                     nombre="Cabezazo",
+                    costes=[Normal],
                     efectos = [EfectoDanio(Normal, cantidad=20)]
                 ),
                 GolpeBasico(
                     nombre="Refugio",
                     costes=[Normal, Normal],
-                    efectos = [EfectoDureza(cantidad=10, stack=1)]
+                    efectos = [AplicarBuff(BuffDureza(cantidad=10, stack=1), a_oponente=False)]
                 ),
                 GolpeBasico(
                     nombre="Burbujas",
                     costes=[Agua, Agua],
                     efectos = [
                         EfectoDanio(Agua, cantidad=20),
-                        AplicadorDeEfecto(EfectoDebilidad(cantidad=10))
+                        AplicarBuff(BuffDebilidad(cantidad=10))
                     ]
                 )
             ], 
@@ -180,7 +185,7 @@ class Squirtle(Pokemon):
 
 # class Snorlax(Pokemon):
 #     def __init__(self):
-#         super().__init__("Snorlax", Normal(), 100, [GolpesFuria, Descansar, Cabezazo], [EfectoDureza])
+#         super().__init__("Snorlax", Normal(), 100, [GolpesFuria, Descansar, Cabezazo], [BuffDureza])
 
 class Machop(Pokemon):
     def __init__(self):
@@ -197,7 +202,7 @@ class Machop(Pokemon):
                 GolpeBasico(
                     nombre="Gruñido",
                     efectos = [
-                        AplicadorDeEfecto(EfectoDebilidad(cantidad=10,stack=1))
+                        AplicarBuff(BuffDebilidad(cantidad=10))
                     ]
                 ),
                 GolpeBasico(
@@ -229,7 +234,7 @@ class Abra(Pokemon):
                     costes=[Psiquico],
                     efectos = [
                         EfectoDanio(Psiquico, cantidad=10),
-                        AplicadorDeEfecto(EfectoAutoataque(probabilidad=[1,2]))
+                        AplicarBuff(BuffAutoataque(probabilidad=[1,2]))
                         ]
                 ),
                 GolpeBasico(
@@ -237,7 +242,7 @@ class Abra(Pokemon):
                     costes=[Psiquico, Psiquico],
                     efectos = [
                         EfectoDanio(Psiquico, cantidad=10),
-                        AplicadorDeEfecto(EfectoAutoataque(probabilidad=[1,2,3], permanente=True))
+                        AplicarBuff(BuffAutoataque(probabilidad=[1,2,3], permanente=True))
                         ]
                 ),
                 GolpeBasico(
@@ -256,14 +261,46 @@ class Bulbasaur(Pokemon):
         super().__init__(
             "Bulbasaur", 
             Planta(), 
-            600, 
+            60, 
             [
                 GolpeBasico(
                     nombre="Lianas",
                     costes=[Planta],
                     efectos = [
                         EfectoDanio(Planta, cantidad=10),
-                        AplicadorDeEfecto(EfectoNoAtacar(), probabilidad=[5,6])
+                        AplicarBuff(BuffNoAtacar(), probabilidad=[1,2,3,4,5,6])
+                    ]
+                ),
+                GolpeBasico(
+                    nombre="Embestida",
+                    costes=[Normal, Normal],
+                    efectos = [
+                        EfectoDanio(Normal, cantidad=20)
+                    ]
+                ),
+                GolpeBasico(
+                    nombre="Hojas navaja",
+                    costes=[Planta, Planta],
+                    efectos = [EfectoDanio(Planta, cantidad=30)]
+                )
+            ], 
+            []
+        )
+
+
+class Weepinbell(Pokemon):
+    def __init__(self):
+        super().__init__(
+            "Weepinbell", 
+            Planta(), 
+            60, 
+            [
+                GolpeBasico(
+                    nombre="Lianas",
+                    costes=[Planta],
+                    efectos = [
+                        EfectoDanio(Planta, cantidad=10),
+                        AplicarBuff(BuffNoAtacar(), probabilidad=[4,5,6])
                     ]
                 ),
                 GolpeBasico(
